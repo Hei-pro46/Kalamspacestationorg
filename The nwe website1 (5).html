@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ISS Explorer — Virtual Tours & Orbit Quiz</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand:#0b3d91;           /* primary deep blue */
+      --accent:#9b2b2b;          /* secondary maroon accent (optional) */
+      --muted:#f6f7f9;
+      --card:#ffffff;
+      --text:#111217;
+      --subtle:#6b6f76;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 8px 24px rgba(11,61,145,0.08);
+      --radius:12px;
+      --max-width:1100px;
+    }
+
+    /* Reset & base */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Merriweather", Georgia, serif;
+      color:var(--text);
+      background: linear-gradient(180deg,var(--muted), #fff 40%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.6;
+      font-size:17px; /* ~16-18px body */
+    }
+
+    a{color:var(--brand); text-decoration:none}
+    img{max-width:100%; display:block}
+
+    /* Header / Nav */
+    header{
+      position:sticky;
+      top:0; left:0; right:0;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(to right, rgba(255,255,255,0.85), rgba(255,255,255,0.7));
+      border-bottom:1px solid rgba(16,24,40,0.04);
+      z-index:1000;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-wrap{
+      max-width:var(--max-width);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      gap:20px;
+      padding:10px 20px;
+    }
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .logo img{
+      width:56px;
+      height:56px;
+      object-fit:contain;
+      border-radius:8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      background:linear-gradient(180deg,#fff,#f1f5ff);
+    }
+    .brand-title{
+      font-family:"Playfair Display", serif;
+      font-weight:600;
+      font-size:20px;
+      color:var(--brand);
+    }
+    nav{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      font-size:16px; /* nav link font-size */
+    }
+    .nav-link{
+      padding:10px 8px;
+      border-radius:8px;
+      color:var(--text);
+      transition:all .22s ease;
+      position:relative;
+    }
+    .nav-link:hover{ color:var(--brand); transform:translateY(-2px); }
+    .nav-link:focus{outline:2px solid rgba(11,61,145,0.12);}
+
+    /* dropdown */
+    .dropdown{
+      position:relative;
+    }
+    .dropdown-toggle{
+      display:flex; align-items:center; gap:8px; cursor:pointer;
+    }
+    .dropdown-menu{
+      position:absolute;
+      top:calc(100% + 8px);
+      left:0;
+      background:var(--card);
+      padding:10px;
+      border-radius:10px;
+      box-shadow:0 12px 30px rgba(15,20,30,0.08);
+      min-width:260px;
+      transform-origin:top center;
+      opacity:0; pointer-events:none;
+      transform:translateY(-6px) scale(.98);
+      transition: opacity .22s ease, transform .22s ease;
+      z-index:2000;
+    }
+    .dropdown:hover .dropdown-menu,
+    .dropdown:focus-within .dropdown-menu{
+      opacity:1; pointer-events:auto; transform:translateY(0) scale(1);
+    }
+    .dropdown-menu a{
+      display:block; padding:8px 12px; color:var(--text); border-radius:6px;
+    }
+    .dropdown-menu a:hover{ background:var(--muted); color:var(--brand); }
+
+    /* Main content */
+    main{ max-width:var(--max-width); margin:36px auto; padding:0 20px; }
+
+    .hero{
+      display:flex;
+      gap:28px;
+      align-items:center;
+      padding:28px;
+      background:linear-gradient(180deg, rgba(11,61,145,0.03), rgba(155,43,43,0.01));
+      border-radius:16px;
+      box-shadow: 0 8px 30px rgba(11,61,145,0.04);
+      overflow:hidden;
+    }
+    .hero .left{
+      flex:1;
+    }
+    .hero h1{
+      margin:0 0 10px;
+      font-family:"Playfair Display", serif;
+      font-weight:700;
+      font-size:34px; /* H1 ~32-36 px */
+      color:var(--brand);
+      letter-spacing:-0.5px;
+    }
+    .hero p.lead{ margin:0; color:var(--subtle); font-size:16px; }
+
+    .hero .cta{
+      margin-top:16px;
+      display:flex; gap:12px;
+    }
+    .btn{
+      background:var(--brand);
+      color:white;
+      padding:10px 16px;
+      border-radius:10px;
+      display:inline-block;
+      text-decoration:none;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .btn:hover{ transform:translateY(-3px); box-shadow:0 12px 30px rgba(11,61,145,0.12); }
+    .btn.secondary{
+      background:transparent;
+      color:var(--brand);
+      border:1px solid rgba(11,61,145,0.08);
+    }
+
+    /* Sections */
+    section{ margin:40px 0; padding:18px; background:transparent; }
+    .section-card{
+      background:var(--card);
+      border-radius:12px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    h2{
+      font-family:"Playfair Display", serif;
+      font-size:26px; /* H2 ~24-28px */
+      margin:0 0 12px;
+    }
+
+    /* ISS Photos grid */
+    .photos-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:12px;
+    }
+    .photo{
+      border-radius:10px;
+      overflow:hidden;
+      position:relative;
+      min-height:140px;
+      background:linear-gradient(180deg,#e9eefb,#f9fbff);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .photo figcaption{ position:absolute; bottom:10px; left:10px; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,0.4); font-weight:600; }
+
+    /* Orbit Quiz - full-screen question area */
+    .quiz-shell{
+      position:relative;
+      height:calc(100vh - 120px);
+      margin:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      border-radius:12px;
+      background: linear-gradient(180deg, rgba(11,61,145,0.04), rgba(155,43,43,0.02));
+    }
+    .quiz-viewport{
+      width:100%;
+      max-width:920px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), #fff);
+      padding:36px;
+      border-radius:14px;
+      box-shadow: 0 20px 40px rgba(12,18,40,0.06);
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      align-items:flex-start;
+      justify-content:center;
+      text-align:left;
+      transform:translateY(0);
+      transition:transform .4s cubic-bezier(.2,.9,.2,1);
+    }
+    .q-index{ font-size:14px; color:var(--subtle); }
+    .q-text{
+      font-family:"Playfair Display", serif;
+      font-size:28px;
+      margin:6px 0 0;
+      line-height:1.2;
+      color:var(--brand);
+    }
+    .q-controls{ display:flex; gap:10px; width:100%; justify-content:space-between; align-items:center; margin-top:8px; }
+
+    .quiz-actions{ display:flex; gap:10px; align-items:center; }
+    .ghost{ background:transparent; border:1px solid rgba(0,0,0,0.06); padding:8px 12px; border-radius:8px; cursor:pointer; }
+    .progress{
+      height:10px; width:260px; background: #f1f3f6; border-radius:10px; overflow:hidden;
+    }
+    .progress > i{
+      display:block; height:100%; background:linear-gradient(90deg,var(--brand), var(--accent)); width:0%;
+      transition:width .4s ease;
+    }
+
+    /* Answer Modal (pop-up) */
+    .answer-modal{
+      position:fixed;
+      left:50%; top:50%;
+      transform:translate(-50%,-50%) scale(.96);
+      min-width:320px;
+      max-width:720px;
+      width:clamp(320px,70vw,720px);
+      background:linear-gradient(180deg,#fff,#fbfdff);
+      border-radius:14px;
+      padding:22px;
+      box-shadow: 0 24px 60px rgba(6,12,28,0.2);
+      z-index:3000;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .26s ease, transform .26s cubic-bezier(.2,.9,.2,1);
+    }
+    .answer-modal.show{ opacity:1; pointer-events:auto; transform:translate(-50%,-50%) scale(1); }
+    .answer-modal .ans-title{ font-weight:700; color:var(--brand); font-family:"Playfair Display", serif; margin-bottom:8px; }
+    .answer-modal .ans-body{ color:var(--subtle); line-height:1.5; white-space:pre-wrap; }
+
+    .modal-close{
+      position:absolute;
+      right:12px; top:10px;
+      background:transparent; border:0; font-size:16px; cursor:pointer; color:var(--subtle);
+    }
+
+    /* fade-in on scroll utility */
+    .reveal{ opacity:0; transform:translateY(12px); transition:opacity .7s ease, transform .7s ease; }
+    .reveal.visible{ opacity:1; transform:translateY(0); }
+
+    /* footer */
+    footer{ text-align:center; color:var(--subtle); padding:26px 0; font-size:14px; }
+
+    /* accessibility & small screens */
+    @media (max-width:820px){
+      .nav-wrap{ padding:10px 14px }
+      .hero{flex-direction:column; align-items:flex-start}
+      .hero img{ width:100%; max-width:300px }
+      .quiz-viewport{ padding:20px; border-radius:12px }
+      .progress{ display:none }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-wrap">
+      <div class="logo" aria-hidden="false">
+        <!-- Replace "logo.png" with the filename of the logo you uploaded -->
+        <img src="C:\Users\placy\Downloads\Logo.png" alt="Site Logo (replace with your uploaded image)" id="site-logo" />
+        <div>
+          <div class="brand-title">ISS Explorer</div>
+          <div style="font-size:12px;color:var(--subtle)">Virtual Tours · Photos · Quiz</div>
+        </div>
+      </div>
+
+      <nav role="navigation" aria-label="Main menu">
+        <a class="nav-link" href="#home">Home</a>
+        <a class="nav-link" href="#about">About Us</a>
+
+        <div class="dropdown">
+          <div class="nav-link dropdown-toggle" tabindex="0">Virtual tours ▾</div>
+          <div class="dropdown-menu" role="menu" aria-label="Virtual tours">
+            <a href="#vt-iss-360" role="menuitem">Explore the ISS in 360°: Experience Zero Gravity in VR [4K]</a>
+            <a href="#vt-mission-iss" role="menuitem">Around and inside the Space Station VR 360° [Mission:ISS]</a>
+          </div>
+        </div>
+
+        <a class="nav-link" href="#photos">ISS photos</a>
+        <a class="nav-link" href="https://isstracker.pl/en" target="_blank" rel="noopener">Real Time Trajectory</a>
+        <a class="nav-link" href="#quiz">Orbit Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="hero reveal">
+      <div class="left">
+        <h1>Visit the International Space Station — virtually</h1>
+        <p class="lead">Explore 360° tours, browse iconic ISS photos, and test your knowledge with our immersive Orbit Quiz. Smooth transitions, responsive design, and educational content — curated for curious minds.</p>
+
+        <div class="cta">
+          <a class="btn" href="#vt-iss-360">Start tour</a>
+          <a class="btn secondary" href="#quiz">Take the Quiz</a>
+        </div>
+      </div>
+      <div style="width:360px; text-align:right;">
+        <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=4b6f43266f5ea6d9d0da2d8f2a9b8df9" alt="ISS in orbit" style="border-radius:12px; box-shadow:0 14px 40px rgba(11,61,145,0.06)"/>
+      </div>
+    </section>
+
+    <section id="about" class="section-card reveal">
+      <h2>About Us</h2>
+      <p>We provide curated virtual experiences and educational resources focused on the International Space Station (ISS). Guidance, photos, interactive tours and a comprehensive quiz — ideal for classrooms and space enthusiasts.</p>
+    </section>
+
+ <section id="virtual-tours" class="section-card reveal">
+  <h2>Virtual tours</h2>
+  <ul>
+    <li id="vt-iss-360">
+      <strong>Explore the ISS in 360°: Experience Zero Gravity in VR [4K]</strong> — immersive 360 video experience (4K recommended).
+      <br>
+      <iframe width="560" height="315" 
+        src="https://www.youtube.com/embed/Erza9mnkI3g" 
+        title="Explore the ISS in 360°" frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        allowfullscreen>
+      </iframe>
+    </li>
+
+    <li id="vt-mission-iss">
+      <strong>Around and inside the Space Station VR 360° [Mission:ISS]</strong> — guided VR walkthrough of ISS modules and exterior.
+      <br>
+      <iframe width="560" height="315" 
+        src="https://www.youtube.com/embed/dwHBpykTloY" 
+        title="Around and inside the Space Station" frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        allowfullscreen>
+      </iframe>
+    </li>
+  </ul>
+</section>
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISS Photos</title>
+  <style>
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background-color: #fdfdfd;
+      color: #222;
+      margin: 0;
+      padding: 0;
+    }
+
+    .section-card {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      color: #060805;
+    }
+
+    .photos-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .photo {
+      background: #fafafa;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      text-align: center;
+      padding: 0.5rem;
+    }
+
+    .photo iframe {
+      border: none;
+      display: block;
+    }
+
+    .photo figcaption {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <section id="photos" class="section-card">
+    <h2>ISS photos</h2>
+    <p>Gallery of selected photographs taken from and of the ISS.</p>
+
+    <div class="photos-grid">
+
+      <figure class="photo">
+        <iframe src="https://1drv.ms/i/c/7834fe84024dbee9/IQQaG4-2gK0cSbScEXw4eEYFAfwF2ania33OEevHeKuPFRo?width=1600&height=901" 
+                width="1600" height="901"></iframe>
+        <figcaption>Earth sunrise from ISS</figcaption>
+      </figure>
+
+      <figure class="photo">
+        <iframe src="https://1drv.ms/i/c/7834fe84024dbee9/IQTPF30UT2-FTLcfxrZrguWFAUSKkdAr4SlFSk9K59XGOkU?width=612&height=408" 
+                width="612" height="408"></iframe>
+        <figcaption>Cupola view</figcaption>
+      </figure>
+
+      <figure class="photo">
+        <iframe src="https://1drv.ms/i/c/7834fe84024dbee9/IQRBCVGB6c5KQ7PvYXkO9oFVAfxPQ4vzhV9V42Ah9ilumUo?width=1024&height=682" 
+                width="1024" height="682"></iframe>
+        <figcaption>ISS solar arm</figcaption>
+      </figure>
+
+      <figure class="photo">
+        <iframe src="https://1drv.ms/i/c/7834fe84024dbee9/IQSHwlpy8cwrQ7Aev_dvOAlCAVrAEu81YUHY6eW86oJn_yY?width=283&height=178" 
+                width="283" height="178"></iframe>
+        <figcaption>ISS solar deployment</figcaption>
+      </figure>
+
+      <figure class="photo">
+        <iframe src="https://1drv.ms/i/c/7834fe84024dbee9/IQRxSBYFYb7YTanL7EqF2EFEAbX46iAkQ7RWZJ1ZQPjZugk?width=960&height=630" 
+                width="960" height="630"></iframe>
+        <figcaption>Solar truss section</figcaption>
+      </figure>
+
+    </div>
+  </section>
+</body>
+</html>
+ 
+
+
+    <!-- Orbit Quiz -->
+    <section id="quiz" class="reveal" aria-labelledby="quiz-title">
+      <div class="section-card">
+        <h2 id="quiz-title">Orbit Quiz — Test your ISS knowledge</h2>
+        <p style="color:var(--subtle); margin-top:6px;">Each question fills the screen. Click <strong>Reveal Answer</strong> to see the answer in a pop-up. Use Next / Prev to navigate.</p>
+
+        <div class="quiz-shell" role="region" aria-roledescription="Quiz viewport">
+          <div class="quiz-viewport" id="quizViewport" aria-live="polite">
+            <div class="q-index" id="qIndex">Question 1 / 20</div>
+            <div class="q-text" id="qText">Loading question...</div>
+
+            <div class="q-controls">
+              <div class="quiz-actions">
+                <button class="btn" id="revealBtn" aria-haspopup="dialog">Reveal Answer</button>
+                <button class="ghost" id="prevBtn" title="Previous question">Prev</button>
+                <button class="ghost" id="nextBtn" title="Next question">Next</button>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="progress" aria-hidden="true"><i id="progBar"></i></div>
+                <div style="font-size:13px; color:var(--subtle)" id="qShort">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Answer Modal / Pop-up -->
+  <div class="answer-modal" id="answerModal" role="dialog" aria-modal="true" aria-labelledby="ansTitle" aria-hidden="true">
+    <button class="modal-close" id="modalClose" aria-label="Close answer">✕</button>
+    <div class="ans-title" id="ansTitle">Answer</div>
+    <div class="ans-body" id="ansBody">Answer content</div>
+    <div style="margin-top:14px; display:flex; gap:8px; justify-content:flex-end;">
+      <button id="prevFromModal" class="ghost">Prev</button>
+      <button id="nextFromModal" class="btn">Next</button>
+    </div>
+  </div>
+
+  <footer>
+    © <span id="year"></span> ISS Explorer — Educational project. Data and content for learning purposes.
+  </footer>
+
+  <script>
+    /* ===========================
+       Quiz data (Questions & Answers)
+       Mapping is based on content you provided.
+       ============================*/
+    const qa = [
+      {
+        q: "What is the primary purpose of the International Space Station?",
+        a: "The primary purpose is to serve as a permanently crewed, low-Earth orbit (LEO) research laboratory for conducting scientific experiments in microgravity and to test technologies required for long-duration deep space exploration missions (e.g., to the Moon and Mars)."
+      },
+      {
+        q: "Which international space agencies are the major partners in the ISS project?",
+        a: "The five major partners are NASA (United States), Roscosmos (Russia), ESA (European Space Agency), JAXA (Japan Aerospace Exploration Agency), and the CSA (Canadian Space Agency)."
+      },
+      {
+        q: "In what year was the first module of the ISS launched into orbit?",
+        a: "The first module, the Russian-built Zarya control module, was launched on November 20, 1998."
+      },
+      {
+        q: "Approximately how high above the Earth's surface does the ISS orbit?",
+        a: "The ISS orbits at an average altitude of approximately 400 kilometers (250 miles)."
+      },
+      {
+        q: "What is the average speed of the ISS, and how long does it take to complete one orbit of Earth?",
+        a: "The ISS travels at approximately 28,000 kilometers per hour (17,500 mph) and completes one orbit of Earth in about 90 minutes."
+      },
+      {
+        q: "Why do astronauts on the ISS witness approximately 16 sunrises and sunsets every 24 hours?",
+        a: "Because the ISS orbits the Earth every ~90 minutes, it passes through an entire cycle of daylight and darkness each orbit, resulting in about 16 sunrises and 16 sunsets during a 24-hour period."
+      },
+      {
+        q: "What is the name of the main robotic arm used on the U.S. segment of the ISS?",
+        a: "The main robotic arm is Canadarm2 (officially the Space Station Remote Manipulator System, SSRMS), contributed by Canada."
+      },
+      {
+        q: "Which module on the ISS provides a distinctive 360-degree viewing area of Earth?",
+        a: "The Cupola module, built by ESA, features seven windows and provides panoramic views of Earth and visiting vehicles."
+      },
+      {
+        q: "What is the typical duration of a single astronaut's expedition aboard the ISS?",
+        a: "A typical mission (expedition) lasts about six months."
+      },
+      {
+        q: "What are the primary methods used to transport crew members and cargo to and from the ISS today?",
+        a: "Crew members are primarily transported by the Russian Soyuz capsule and American commercial crew vehicles like SpaceX Crew Dragon. Cargo is delivered by uncrewed vehicles such as SpaceX Dragon, Northrop Grumman Cygnus, and Russian Progress."
+      },
+      {
+        q: "Life & Science in Space — What is the name of the large assembly on the ISS that holds the solar arrays and radiators?",
+        a: "The main structural backbone is called the Integrated Truss Structure (ITS), which supports solar arrays, radiators and other systems."
+      },
+      {
+        q: "What does the term 'microgravity environment' refer to in the context of the ISS?",
+        a: "Microgravity refers to the condition of apparent weightlessness experienced by astronauts and objects while in free fall around Earth: the station and contents fall together at orbital velocity, producing very small effective gravity forces."
+      },
+      {
+        q: "How do astronauts on the ISS recycle water, including their own urine?",
+        a: "The ISS uses an Environmental Control and Life Support System (ECLSS), which includes a Water Recovery System (WRS) that collects moisture from cabin air, wastewater, and urine, purifies it, and converts it back into potable water."
+      },
+      {
+        q: "What is one major health challenge astronauts face during long-duration stays on the ISS, and what do they do to mitigate it?",
+        a: "Major challenges include muscle atrophy and bone density loss. Astronauts mitigate these effects through a rigorous daily exercise regimen using specialized resistive, treadmill and cycle equipment, plus monitoring and countermeasure research."
+      },
+      {
+        q: "What is the name of the laboratory module contributed by the European Space Agency (ESA)?",
+        a: "The European laboratory module is named Columbus."
+      },
+      {
+        q: "How do the astronauts manage to sleep without floating around inside the station?",
+        a: "Astronauts sleep in small crew sleeping bags that are secured (strapped) to a cabin wall or a fixed structure so they don't float and bump into equipment."
+      },
+      {
+        q: "In addition to scientific research, what other key function does the ISS serve for future human space exploration?",
+        a: "It serves as a proving ground and testbed for technologies, life support systems, medical protocols, and human-health data needed to prepare for missions to the Moon (Artemis) and Mars."
+      },
+      {
+        q: "What is the main source of electrical power for the ISS?",
+        a: "The main source of power is solar energy captured by the large solar arrays mounted on the Integrated Truss Structure; batteries store energy for periods in Earth's shadow."
+      },
+      {
+        q: "How is the ISS's altitude maintained against the constant drag from the Earth's atmosphere?",
+        a: "The ISS's orbit is periodically reboosted using engine firings (reboosts), typically provided by the engines of a docked Russian Progress spacecraft or other reboost-capable vehicles."
+      },
+      {
+        q: "In what year is the ISS currently planned to be decommissioned or deorbited?",
+        a: "The ISS is currently funded and certified to operate through the year 2030."
+      }
+    ];
+
+    // DOM refs
+    const qText = document.getElementById('qText');
+    const qIndex = document.getElementById('qIndex');
+    const qShort = document.getElementById('qShort');
+    const progBar = document.getElementById('progBar');
+    const revealBtn = document.getElementById('revealBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const answerModal = document.getElementById('answerModal');
+    const ansTitle = document.getElementById('ansTitle');
+    const ansBody = document.getElementById('ansBody');
+    const modalClose = document.getElementById('modalClose');
+    const prevFromModal = document.getElementById('prevFromModal');
+    const nextFromModal = document.getElementById('nextFromModal');
+    const yearSpan = document.getElementById('year');
+
+    let cur = 0;
+    const total = qa.length;
+
+    function renderQuestion(index){
+      const item = qa[index];
+      qText.textContent = item.q;
+      qIndex.textContent = `Question ${index+1} / ${total}`;
+      qShort.textContent = `Q${index+1}`;
+      progBar.style.width = `${Math.round(((index+1)/total)*100)}%`;
+      // ensure modal hidden
+      hideModal();
+      // Make the viewport appear full-screen experiential (we keep it within container but style is large)
+      // subtle animation
+      const vp = document.getElementById('quizViewport');
+      vp.style.transform = 'translateY(6px)';
+      setTimeout(()=> vp.style.transform = 'translateY(0)', 220);
+    }
+
+    function showModal(answerText){
+      ansBody.textContent = answerText;
+      const n = cur+1;
+      ansTitle.textContent = `Answer — Question ${n}`;
+      answerModal.classList.add('show');
+      answerModal.setAttribute('aria-hidden','false');
+      // focus for accessibility
+      modalClose.focus();
+    }
+
+    function hideModal(){
+      answerModal.classList.remove('show');
+      answerModal.setAttribute('aria-hidden','true');
+    }
+
+    // navigation
+    prevBtn.addEventListener('click', ()=>{
+      cur = (cur - 1 + total) % total;
+      renderQuestion(cur);
+    });
+    nextBtn.addEventListener('click', ()=>{
+      cur = (cur + 1) % total;
+      renderQuestion(cur);
+    });
+
+    prevFromModal.addEventListener('click', ()=>{
+      cur = (cur - 1 + total) % total;
+      renderQuestion(cur);
+    });
+
+    nextFromModal.addEventListener('click', ()=>{
+      cur = (cur + 1) % total;
+      renderQuestion(cur);
+    });
+
+    revealBtn.addEventListener('click', ()=>{
+      showModal(qa[cur].a);
+    });
+
+    modalClose.addEventListener('click', hideModal);
+    // close modal on esc
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape') hideModal();
+      // left/right navigation
+      if (e.key === 'ArrowLeft') { cur = (cur - 1 + total) % total; renderQuestion(cur); }
+      if (e.key === 'ArrowRight') { cur = (cur + 1) % total; renderQuestion(cur); }
+    });
+
+    // clicking outside modal closes it
+    document.addEventListener('click', (e)=>{
+      if (answerModal.classList.contains('show') && !answerModal.contains(e.target) && !revealBtn.contains(e.target)){
+        hideModal();
+      }
+    });
+
+    // initial render
+    renderQuestion(cur);
+
+    // reveal on-scroll
+    const observers = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if (entry.isIntersecting){
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.12});
+    observers.forEach(el => io.observe(el));
+
+    // footer year
+    yearSpan.textContent = new Date().getFullYear();
+
+    // Small enhancement: smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const href = a.getAttribute('href');
+        if (href.length > 1){
+          e.preventDefault();
+          document.querySelector(href).scrollIntoView({behavior:'smooth', block:'center'});
+        }
+      });
+    });
+
+    // Accessibility: trap focus when modal open (simple)
+    document.addEventListener('focusin', (e)=>{
+      if (answerModal.classList.contains('show') && !answerModal.contains(e.target)){
+        e.stopPropagation();
+        answerModal.focus();
+      }
+    });
+  </script>
+</body>
+</html>
